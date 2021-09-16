@@ -40,7 +40,7 @@ const getDate = (): string => {
   fs.writeFileSync("full_marketcap_desc.json", JSON.stringify(full, null, 2));
 
   const template = fs.readFileSync("./README.template.md", "utf8");
-  template.replace("{{count}}", `${minimal.length}`);
-  template.replace("{{date}}", getDate());
-  fs.writeFileSync("./README.md", template);
+  let i = template.replace("{{count}}", `${minimal.length}`);
+  i = i.replace("{{date}}", getDate().replace(" ", "%20"));
+  fs.writeFileSync("./README.md", i);
 })();
