@@ -4,6 +4,12 @@ import fs from "fs";
 
 const wait = (ms = 2000) => new Promise((res) => setTimeout(res, ms));
 
+const getDate = (): string => {
+  const now = new Date();
+  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  return now.getDate() + " " + months[now.getMonth()] + " " + now.getFullYear();
+};
+
 (async () => {
   let canContinue = true;
   let page = 1;
@@ -32,4 +38,9 @@ const wait = (ms = 2000) => new Promise((res) => setTimeout(res, ms));
   fs.writeFileSync("minimal_marketcap_desc_top200.json", JSON.stringify(top200m, null, 2));
   fs.writeFileSync("minimal_marketcap_desc_top500.json", JSON.stringify(top500m, null, 2));
   fs.writeFileSync("full_marketcap_desc.json", JSON.stringify(full, null, 2));
+
+  const template = fs.readFileSync("../README.template.md", "utf8");
+  template.replace("{{count}}", `${minimal.length}`);
+  template.replace("{{date}}", getDate());
+  fs.writeFileSync("../README.md", template);
 })();
