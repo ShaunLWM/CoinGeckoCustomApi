@@ -7,7 +7,7 @@ const wait = (ms = 2000) => new Promise((res) => setTimeout(res, ms));
 const getDate = (): string => {
   const now = new Date();
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  return now.getDate() + " " + months[now.getMonth()] + " " + now.getFullYear();
+  return now.getDate() + "%20" + months[now.getMonth()] + "%20" + now.getFullYear();
 };
 
 (async () => {
@@ -41,6 +41,6 @@ const getDate = (): string => {
 
   const template = fs.readFileSync("./README.template.md", "utf8");
   let i = template.replace("{{count}}", `${minimal.length}`);
-  i = i.replace("{{date}}", getDate().replace(" ", "%20"));
+  i = i.replace("{{date}}", getDate());
   fs.writeFileSync("./README.md", i);
 })();
