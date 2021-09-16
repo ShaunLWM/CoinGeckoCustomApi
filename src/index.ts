@@ -39,8 +39,8 @@ const getDate = (): string => {
   fs.writeFileSync("minimal_marketcap_desc_top500.json", JSON.stringify(top500m, null, 2));
   fs.writeFileSync("full_marketcap_desc.json", JSON.stringify(full, null, 2));
 
-  const template = fs.readFileSync("../README.template.md", "utf8");
+  const template = fs.readFileSync("./README.template.md", "utf8");
   template.replace("{{count}}", `${minimal.length}`);
   template.replace("{{date}}", getDate());
-  fs.writeFileSync("../README.md", template);
+  fs.writeFileSync("./README.md", template);
 })();
