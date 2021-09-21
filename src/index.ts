@@ -1,13 +1,16 @@
 import fetch from "node-fetch";
 import pick from "lodash.pick";
 import fs from "fs";
+import { diff } from "fast-array-diff";
 
 const wait = (ms = 2000) => new Promise((res) => setTimeout(res, ms));
 
-const getDate = (): string => {
+const getDate = (encode = false): string => {
   const now = new Date();
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  return now.getDate() + "%20" + months[now.getMonth()] + "%20" + now.getFullYear();
+  return (
+    now.getDate() + `${encode ? "%20" : " "}` + months[now.getMonth()] + `${encode ? "%20" : " "}` + now.getFullYear()
+  );
 };
 
 (async () => {
@@ -34,6 +37,32 @@ const getDate = (): string => {
   top200m.push(...full.map((p) => pick(p, ["id", "name", "symbol", "image"])).slice(0, 200));
   top500m.push(...full.map((p) => pick(p, ["id", "name", "symbol", "image"])).slice(0, 500));
 
+  /* ------------------ Create CHANGELOGs ------------------- */
+  const oldTokens = JSON.parse(fs.readFileSync("full_marketcap_desc.json", "utf8"));
+  const oldTokensMap = oldTokens.map((p: MarketItem) => p.symbol);
+  const newTokensMap = full.map((p: MarketItem) => p.symbol);
+  const diffTokens = diff(oldTokensMap, newTokensMap);
+
+  let hasAdded = false;
+  let hasLines = false;
+  let str = `### ${getDate()}`;
+  if (diffTokens.added) {
+    str += `\n\n- Added ${diffTokens.added}`;
+    hasAdded = true;
+    hasLines = true;
+  }
+
+  if (diffTokens.removed) {
+    hasLines = true;
+    str += `${hasAdded ? "" : "\n"}\n- Removed ${diffTokens.removed}`;
+  }
+
+  if (hasLines) {
+    const changelog = fs.readFileSync("CHANGELOG.md", "utf8");
+    const addedChangelog = `${str}\n\n${changelog}`;
+    fs.writeFileSync("CHANGELOG.md", addedChangelog, "utf8");
+  }
+
   fs.writeFileSync("minimal_marketcap_desc.json", JSON.stringify(minimal, null, 2));
   fs.writeFileSync("minimal_marketcap_desc_top200.json", JSON.stringify(top200m, null, 2));
   fs.writeFileSync("minimal_marketcap_desc_top500.json", JSON.stringify(top500m, null, 2));
@@ -41,6 +70,6 @@ const getDate = (): string => {
 
   const template = fs.readFileSync("./README.template.md", "utf8");
   let i = template.replace("{{count}}", `${minimal.length}`);
-  i = i.replace("{{date}}", getDate());
+  i = i.replace("{{date}}", getDate(true));
   fs.writeFileSync("./README.md", i);
 })();

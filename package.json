@@ -45,6 +45,7 @@
   },
   "dependencies": {
     "@types/lodash.pick": "^4.4.6",
+    "fast-array-diff": "^1.0.1",
     "lodash.pick": "^4.4.0",
     "node-fetch": "2.6.2"
   }
