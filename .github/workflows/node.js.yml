@@ -16,6 +16,7 @@ jobs:
       with:
           persist-credentials: false
           fetch-depth: 0
+    - run: git pull --rebase origin "${GITHUB_REF}"
     - name: Use Node14
       uses: actions/setup-node@v2
       with:
@@ -27,7 +28,6 @@ jobs:
       run: node dist
     - name: Commit files
       run: |
-        git pull --rebase origin "${GITHUB_REF}"
         git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
         git add . 
