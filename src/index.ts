@@ -39,9 +39,7 @@ const getDate = (encode = false): string => {
 
   /* ------------------ Create CHANGELOGs ------------------- */
   const oldTokens = JSON.parse(fs.readFileSync("full_marketcap_desc.json", "utf8"));
-  const oldTokensMap = oldTokens.map((p: MarketItem) => p.symbol);
-  const newTokensMap = full.map((p: MarketItem) => p.symbol);
-  const diffTokens = diff(oldTokensMap, newTokensMap);
+  const diffTokens = diff(oldTokens, full, (a, b) => a.symbol === b.symbol);
 
   let hasAdded = false;
   let hasLines = false;
