@@ -1,3 +1,8 @@
+interface ArrayDiff {
+  removed: string[];
+  added: string[];
+}
+
 interface Coin {
   id: string;
   symbol: string;

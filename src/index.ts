@@ -1,7 +1,7 @@
 import fetch from "node-fetch";
 import pick from "lodash.pick";
 import fs from "fs";
-import { diff } from "fast-array-diff";
+import { diff } from "./lib/Helper";
 
 const wait = (ms = 2000) => new Promise((res) => setTimeout(res, ms));
 
@@ -38,8 +38,10 @@ const getDate = (encode = false): string => {
   top500m.push(...full.map((p) => pick(p, ["id", "name", "symbol", "image"])).slice(0, 500));
 
   /* ------------------ Create CHANGELOGs ------------------- */
-  const oldTokens = JSON.parse(fs.readFileSync("full_marketcap_desc.json", "utf8"));
-  const diffTokens = diff(oldTokens, full, (a, b) => a.symbol === b.symbol);
+  const oldTokens = (JSON.parse(fs.readFileSync("full_marketcap_desc.json", "utf8")) as MarketItem[])
+    .map((p) => p.symbol)
+    .sort();
+  const diffTokens = diff(oldTokens, full.map((p) => p.symbol).sort());
 
   let hasAdded = false;
   let hasLines = false;
@@ -58,7 +60,7 @@ const getDate = (encode = false): string => {
   if (hasLines) {
     const changelog = fs.readFileSync("CHANGELOG.md", "utf8");
     const addedChangelog = `${str}\n\n${changelog}`;
-    // fs.writeFileSync("CHANGELOG.md", addedChangelog, "utf8");
+    fs.writeFileSync("CHANGELOG.md", addedChangelog, "utf8");
   }
 
   fs.writeFileSync("minimal_marketcap_desc.json", JSON.stringify(minimal, null, 2));
