@@ -58,7 +58,7 @@ const getDate = (encode = false): string => {
   if (hasLines) {
     const changelog = fs.readFileSync("CHANGELOG.md", "utf8");
     const addedChangelog = `${str}\n\n${changelog}`;
-    fs.writeFileSync("CHANGELOG.md", addedChangelog, "utf8");
+    // fs.writeFileSync("CHANGELOG.md", addedChangelog, "utf8");
   }
 
   fs.writeFileSync("minimal_marketcap_desc.json", JSON.stringify(minimal, null, 2));
