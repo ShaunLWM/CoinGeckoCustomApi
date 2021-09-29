@@ -38,6 +38,7 @@ const getDate = (encode = false): string => {
   top500m.push(...full.map((p) => pick(p, ["id", "name", "symbol", "image"])).slice(0, 500));
 
   /* ------------------ Create CHANGELOGs ------------------- */
+  /*
   const oldTokens = (JSON.parse(fs.readFileSync("full_marketcap_desc.json", "utf8")) as MarketItem[])
     .map((p) => p.symbol)
     .sort();
@@ -62,6 +63,7 @@ const getDate = (encode = false): string => {
     const addedChangelog = `${str}\n\n${changelog}`;
     fs.writeFileSync("CHANGELOG.md", addedChangelog, "utf8");
   }
+  */
 
   fs.writeFileSync("minimal_marketcap_desc.json", JSON.stringify(minimal, null, 2));
   fs.writeFileSync("minimal_marketcap_desc_top200.json", JSON.stringify(top200m, null, 2));
