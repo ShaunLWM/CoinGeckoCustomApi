@@ -15,7 +15,6 @@ jobs:
     - uses: actions/checkout@v2
       with:
           persist-credentials: false
-          fetch-depth: 0
     - run: git pull --rebase origin "${GITHUB_REF}"
     - name: Use Node14
       uses: actions/setup-node@v2
