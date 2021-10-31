@@ -3,7 +3,7 @@ import pick from "lodash.pick";
 import fs from "fs";
 import { diff } from "./lib/Helper";
 
-const wait = (ms = 2000) => new Promise((res) => setTimeout(res, ms));
+const wait = (ms = 1500) => new Promise((res) => setTimeout(res, ms));
 
 const getDate = (encode = false): string => {
   const now = new Date();
@@ -14,6 +14,7 @@ const getDate = (encode = false): string => {
 };
 
 (async () => {
+  console.time("GO");
   let canContinue = true;
   let page = 1;
   const minimal = [];
@@ -74,4 +75,5 @@ const getDate = (encode = false): string => {
   let i = template.replace("{{count}}", `${minimal.length}`);
   i = i.replace("{{date}}", getDate(true));
   fs.writeFileSync("./README.md", i);
+  console.timeEnd("GO");
 })();
