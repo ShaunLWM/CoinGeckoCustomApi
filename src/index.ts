@@ -1,7 +1,6 @@
 import fetch from "node-fetch";
 import pick from "lodash.pick";
 import fs from "fs";
-import { diff } from "./lib/Helper";
 
 const wait = (ms = 1500) => new Promise((res) => setTimeout(res, ms));
 
@@ -40,26 +39,38 @@ const getDate = (encode = false): string => {
 
   /* ------------------ Create CHANGELOGs ------------------- */
   /*
+  const added: string[] = [];
+  const removed: string[] = [];
+
   const oldTokens = (JSON.parse(fs.readFileSync("full_marketcap_desc.json", "utf8")) as MarketItem[])
     .map((p) => p.symbol)
     .sort();
-  const diffTokens = diff(oldTokens, full.map((p) => p.symbol).sort());
+  const newTokens = full.map((p) => p.symbol);
 
-  let hasAdded = false;
-  let hasLines = false;
+  oldTokens.forEach((pre) => {
+    const found = newTokens.find((p) => p === pre);
+    if (!found) {
+      removed.push(pre);
+    }
+  });
+
+  newTokens.forEach((post) => {
+    const found = oldTokens.find((p) => p === post);
+    if (!found) {
+      added.push(post);
+    }
+  });
+
   let str = `### ${getDate()}`;
-  if (diffTokens.added) {
-    str += `\n\n- Added ${diffTokens.added}`;
-    hasAdded = true;
-    hasLines = true;
+  if (added.length > 0) {
+    str += `\n\n- Added ${added.join(", ")}`;
   }
 
-  if (diffTokens.removed) {
-    hasLines = true;
-    str += `${hasAdded ? "" : "\n"}\n- Removed ${diffTokens.removed}`;
+  if (removed.length > 0) {
+    str += `${added.length > 0 ? "" : "\n"}\n- Removed ${removed.join(", ")}`;
   }
 
-  if (hasLines) {
+  if (added.length > 0 || removed.length > 0) {
     const changelog = fs.readFileSync("CHANGELOG.md", "utf8");
     const addedChangelog = `${str}\n\n${changelog}`;
     fs.writeFileSync("CHANGELOG.md", addedChangelog, "utf8");
