@@ -1,6 +1,6 @@
 This repository holds an automated CoinGecko Market API Listings - auto-updated every 12 hours
 
-![Last Updated](https://img.shields.io/badge/12%20Nov%202021-updated-brightgreen?style=for-the-badge)
+![Last Updated](https://img.shields.io/badge/13%20Nov%202021-updated-brightgreen?style=for-the-badge)
 ![Unique Tokens](https://img.shields.io/badge/10692-tokens-blue?style=for-the-badge)
 
 ## Sort by MarketCap (desc)
