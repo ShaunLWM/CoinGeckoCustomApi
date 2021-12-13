@@ -38,10 +38,15 @@ const getDate = (encode = false): string => {
     return;
   }
 
-  full.filter((p) => p.market_cap_rank && p.market_cap_rank > 0).sort((a, b) => a.market_cap_rank - b.market_cap_rank);
-  minimal.push(...full.map((p) => pick(p, ["id", "name", "symbol", "image"])));
-  top200m.push(...full.map((p) => pick(p, ["id", "name", "symbol", "image"])).slice(0, 200));
-  top500m.push(...full.map((p) => pick(p, ["id", "name", "symbol", "image"])).slice(0, 500));
+  const withMarketCap = full.filter((p) => p.market_cap_rank !== null && p.market_cap_rank > 0);
+  withMarketCap.sort((a, b) => a.market_cap_rank - b.market_cap_rank);
+
+  const noMarketCap = full.filter((p) => p.market_cap_rank == null || p.market_cap_rank < 1);
+  withMarketCap.push(...noMarketCap);
+
+  minimal.push(...withMarketCap.map((p) => pick(p, ["id", "name", "symbol", "image"])));
+  top200m.push(...withMarketCap.map((p) => pick(p, ["id", "name", "symbol", "image"])).slice(0, 200));
+  top500m.push(...withMarketCap.map((p) => pick(p, ["id", "name", "symbol", "image"])).slice(0, 500));
 
   /* ------------------ Create CHANGELOGs ------------------- */
   /*
@@ -86,7 +91,7 @@ const getDate = (encode = false): string => {
   fs.writeFileSync("minimal_marketcap_desc.json", JSON.stringify(minimal, null, 2));
   fs.writeFileSync("minimal_marketcap_desc_top200.json", JSON.stringify(top200m, null, 2));
   fs.writeFileSync("minimal_marketcap_desc_top500.json", JSON.stringify(top500m, null, 2));
-  fs.writeFileSync("full_marketcap_desc.json", JSON.stringify(full, null, 2));
+  fs.writeFileSync("full_marketcap_desc.json", JSON.stringify(withMarketCap, null, 2));
 
   const template = fs.readFileSync("./README.template.md", "utf8");
   let i = template.replace("{{count}}", `${minimal.length}`);
