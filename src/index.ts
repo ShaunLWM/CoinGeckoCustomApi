@@ -1,38 +1,44 @@
 import fetch from "node-fetch";
 import pick from "lodash.pick";
 import fs from "fs";
+import chunk from "lodash.chunk";
 
 const wait = (ms = 1500) => new Promise((res) => setTimeout(res, ms));
 
 const getDate = (encode = false): string => {
   const now = new Date();
   const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  return (
-    now.getDate() + `${encode ? "%20" : " "}` + months[now.getMonth()] + `${encode ? "%20" : " "}` + now.getFullYear()
-  );
+  return `${now.getDate()}${encode ? "%20" : " "}${months[now.getMonth()]}${encode ? "%20" : " "}${now.getFullYear()}`;
 };
 
 (async () => {
   console.time("GO");
-  let canContinue = true;
-  let page = 1;
   const minimal = [];
   const full = [];
   const top200m = [];
   const top500m = [];
 
-  while (canContinue) {
+  const coinsList = await fetch("https://api.coingecko.com/api/v3/coins/list");
+  const coinsListJson = (await coinsList.json()) as Coin[];
+  const chunked = chunk(coinsListJson, 250);
+  for (let i = 0; i < chunked.length; i += 1) {
+    const chunky = chunked[i];
     const response = await fetch(
-      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=250&page=${page}`
+      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&ids=${chunky
+        .map((p) => p.id)
+        .join(",")}`
     );
     const items = (await response.json()) as MarketItem[];
     full.push(...items);
-    console.log(`Finished page ${page}`);
-    if (items.length < 250) canContinue = false;
-    page += 1;
+    console.log(`Finished page ${i}`);
     await wait();
   }
 
+  if (full.length < 1) {
+    return;
+  }
+
+  full.filter((p) => p.market_cap_rank && p.market_cap_rank > 0).sort((a, b) => a.market_cap_rank - b.market_cap_rank);
   minimal.push(...full.map((p) => pick(p, ["id", "name", "symbol", "image"])));
   top200m.push(...full.map((p) => pick(p, ["id", "name", "symbol", "image"])).slice(0, 200));
   top500m.push(...full.map((p) => pick(p, ["id", "name", "symbol", "image"])).slice(0, 500));
