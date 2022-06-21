@@ -1,7 +1,7 @@
 This repository holds an automated CoinGecko Market API Listings - auto-updated every 12 hours
 
-![Last Updated](https://img.shields.io/badge/20%20Jun%202022-updated-brightgreen?style=for-the-badge)
-![Unique Tokens](https://img.shields.io/badge/13474-tokens-blue?style=for-the-badge)
+![Last Updated](https://img.shields.io/badge/21%20Jun%202022-updated-brightgreen?style=for-the-badge)
+![Unique Tokens](https://img.shields.io/badge/13477-tokens-blue?style=for-the-badge)
 
 ## Sort by MarketCap (desc)
 - [Full](https://github.com/ShaunLWM/CoinGeckoCustomApi/raw/main/full_marketcap_desc.json)
